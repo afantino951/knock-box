@@ -4,7 +4,7 @@ class DoorStateMachine:
         self.correct_sequence = ["knock", "elbow", "knock", "knock"]
         self.sequence_index = 0
         self.quiet_count = 0
-        self.allowable_quiet = allowable_quiet
+        self.quiet_limit = allowable_quiet
 
     def process_interaction(self, interaction):
         if self.state == "start":
@@ -12,7 +12,7 @@ class DoorStateMachine:
                 self.sequence_index += 1
             elif interaction == "quiet":
                 self.quiet_count += 1
-                if self.quiet_count > self.allowable_quiet:
+                if self.quiet_count > self.quiet_limit:
                     self.sequence_index = 0
                     self.quiet_count = 0
             else:
