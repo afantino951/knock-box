@@ -55,6 +55,12 @@ for file in E_audio_files:
 X = Q_audios_feat + K_audios_feat + E_audios_feat
 y = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2,2,2,2,2,2,2]
 
+from sklearn.preprocessing import StandardScaler
+scaler = StandardScaler()
+
+scaler.fit(X)
+Scaled_x = scaler.transform(X)
+
 iter = 100
 count = 0
 correct = 0
