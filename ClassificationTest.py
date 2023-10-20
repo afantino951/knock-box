@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn import svm
+from joblib import dump, load
 
 import librosa
 from librosa import feature
@@ -59,11 +60,12 @@ iter = 100
 count = 0
 correct = 0
 
-for i in range(iter):
+clf = svm.SVC()
 
+# Train and Validate
+for i in range(iter):
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-    clf = svm.SVC()
     clf.fit(X_train, y_train)
 
     prediction = clf.predict(X_test)
@@ -72,4 +74,18 @@ for i in range(iter):
             correct = correct + 1
         count = count + 1
 
+
 print("Acc =", correct/count)
+
+
+def save_model(model, dir_path):
+    # Save Model to 
+    model_checkpoint_filename = "model_checkpoint_1"
+    model_checkpoint_filename += ".joblib"
+
+    dump(model, (dir_path+model_checkpoint_filename))
+
+
+
+
+
