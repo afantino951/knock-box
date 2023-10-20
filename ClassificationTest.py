@@ -38,7 +38,7 @@ K_audios_feat = []
 E_audios_feat = []
 
 for file in Q_audio_files:
-   X , sr = librosa.load('gdrive/My Drive/sounds/' + file, sr = None)
+   X , sr = librosa.load('gdrive/My Drive/sounds/' + file, sr = None) #File directory
    feature_vector = get_feature_vector(X, sr)
    Q_audios_feat.append(feature_vector)
 
@@ -48,7 +48,7 @@ for file in K_audio_files:
    K_audios_feat.append(feature_vector)
 
 for file in E_audio_files:
-   X , sr = librosa.load('gdrive/My Drive/sounds/' + file, sr = None)
+   X , sr = librosa.load('gdrive/My Drive/sounds/' + file, sr = None) #File directory
    feature_vector = get_feature_vector(X, sr)
    E_audios_feat.append(feature_vector)
 
