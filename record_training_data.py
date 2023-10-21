@@ -15,10 +15,10 @@ def get_path(cls_ind):
 
 def get_sample_ind(path):
     sample_files = os.listdir(path)
-    # print(sample_files)
+    # print(len(sample_files))
     if len(sample_files) == 0: return 0
     
-    return len(sample_files)-1
+    return len(sample_files)
     
 
 
@@ -51,6 +51,7 @@ if __name__ == "__main__":
         sd.wait()  # Wait until recording is finished
         write(filename, fs, myrecording)  # Save as WAV file 
         print("RECORDING ENDED")
+        print(f"Saving in {filename}")
 
         cont_str = input(f"Press enter to record another {classes[cls_ind]} sample. Press any other key and enter to quit: ")
     
