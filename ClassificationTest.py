@@ -47,15 +47,10 @@ for cls in classes:
         y.append(classes.index(cls))
         sample_ind = sample_ind + 1
 
-### Normalizing ###
-
-from sklearn.preprocessing import StandardScaler
-scaler = StandardScaler()
-
-scaler.fit(audios_feat)
-Scaled_x = scaler.transform(audios_feat)
 
 ### Training ###
+
+from sklearn.preprocessing import StandardScaler
 
 iter = 1000
 count = 0
@@ -63,12 +58,19 @@ correct = 0
 
 for i in range(iter):
 
-    X_train, X_test, y_train, y_test = train_test_split(Scaled_x, y, test_size=0.2)
+    X_train, X_test, y_train, y_test = train_test_split(audios_feat, y, test_size=0.2)
+
+    scaler = StandardScaler()
+
+    scaler.fit(X_train)
+    Scaled_x_train = scaler.transform(X_train)
 
     clf = svm.SVC()
-    clf.fit(X_train, y_train)
+    clf.fit(Scaled_x_train, y_train)
 
-    prediction = clf.predict(X_test)
+    Scaled_x_test = scaler.transform(X_test)
+
+    prediction = clf.predict(Scaled_x_test)
     for j in range(len(prediction)):
         if prediction[j] == y_test[j]:
             correct = correct + 1
