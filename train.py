@@ -5,7 +5,7 @@ import numpy as np
 import sounddevice as sd
 import librosa
 from librosa import feature
-from sklearn import svm
+from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import GridSearchCV
@@ -78,11 +78,10 @@ def train_svm(training_data, labels, clf):
 
         ## GridSearchCV
     
-        param_grid = {'C': [0.1, 1, 10, 100, 1000],  
-                      'gamma': [1, 0.1, 0.01, 0.001, 0.0001, 'scale', 'auto'],
-                      'kernel': ['rbf', 'poly', 'sigmoid']}
+        param_grid = {'penalty': ['l1', 'l2', 'elasticnet', None],
+                      'alpha': [1, 0.1, 0.01, 0.001, 0.0001]}
 
-        grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
+        grid = GridSearchCV(SGDClassifier(), param_grid, refit = True, verbose = 3) 
         grid.fit(Scaled_x_train, labels)
 
         clf_t = grid.best_estimator_
@@ -90,11 +89,39 @@ def train_svm(training_data, labels, clf):
     else:
         clf_t = clf
 
-
     #TODO: train clf_t and return best trained model
+
+    iteration = 1000
+
+    clfs = []
+    accs = []
+
+    for i in range(iter):
+        clf_temp = clf_t
         
+        count = 0
+        correct = 0
+
+        X_train, X_test, y_train, y_test = train_test_split(training_data, labels, test_size=0.2)
+
+        scaler = StandardScaler()
+        scaler.fit(X_train)
+        Scaled_x_train = scaler.transform(X_train)
+
+        clf_temp.partial_fit(Scaled_x_train, y_train)
+
+        Scaled_x_test = scaler.transform(X_test)
+
+        prediction = clf_t.predict(Scaled_x_test)
+        for j in range(len(prediction)):
+            if prediction[j] == y_test[j]:
+                correct = correct + 1
+            count = count + 1
+
+        clfs.append(clf_temp)
+        accs.append(correct/count)
     
-    return clf_t
+    return clfs[accs.index(max(accs))]
 
 def load_model(filename):
     if not os.path.exists(filename):
