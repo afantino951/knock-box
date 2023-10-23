@@ -20,4 +20,3 @@ with sd.InputStream(callback=audio_callback, blocksize=block_size):
 
 # Clean up the audio stream
 sd.stop()
-sd.terminate()
