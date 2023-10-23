@@ -85,22 +85,8 @@ def train_svm(training_data, labels):
 
     grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
     grid.fit(Scaled_x_train, labels) #y_train
-
-    ## Training
     
-    X_train, X_test, y_train, y_test = train_test_split(training_data, labels, test_size=0.2)
-
-    scaler.fit(X_train)
-    Scaled_x_train = scaler.transform(X_train)
-
-    clf = grid.best_estimator_
-    clf.fit(Scaled_x_train, y_train)
-
-    Scaled_x_test = scaler.transform(X_test)
-
-    prediction = clf.predict(Scaled_x_test)
-    
-    return clf
+    return grid.best_estimator_
 
 def load_model(filename):
     if not os.path.exists(filename):
