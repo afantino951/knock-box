@@ -81,7 +81,7 @@ def train_svm(training_data, labels, clf):
         param_grid = {'penalty': ['l1', 'l2', 'elasticnet', None],
                       'alpha': [1, 0.1, 0.01, 0.001, 0.0001]}
 
-        grid = GridSearchCV(SGDClassifier(), param_grid, refit = True, verbose = 3) 
+        grid = GridSearchCV(SGDClassifier(), param_grid, refit=True, verbose=3) 
         grid.fit(Scaled_x_train, labels)
 
         clf_t = grid.best_estimator_
