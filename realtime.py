@@ -9,6 +9,9 @@ from train import load_model
 from train import get_feature_vector
 from train import preprocess_data
 
+
+classes = ["quiet", "palm", "knuckle", "elbow"]
+
 fn_list_i = [
     feature.chroma_stft,
     feature.spectral_centroid,
@@ -24,17 +27,29 @@ fn_list_ii = [
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
 
-    scaler = StandardScaler()
+    print("Processing audio chunk:", indata.shape)
     
+    audios_feat = []
+    
+    feature_vector = get_feature_vector(indata, 44100)
+    audios_feat.append(feature_vector)
+
+
+    ### THIS PART SHOULD BE MODIFIED, LOAD SCALER
+    scaler = StandardScaler()
+    scaler.fit(indata)
+    Scaled_test = scaler.transform(indata)
+    ###
+
     
     clf = load_model("model.joblib") # Model name
-    clf.predict()
+    print(classes[clf.predict(Scaled_test)])
     
-    print("Processing audio chunk:", indata.shape)
+    
 
 # Set the audio parameters
 sample_rate = 44100  # Sample rate in Hz
-chunk_duration = 2  # 2-second audio chunks
+chunk_duration = 1  # 1-second audio chunks
 block_size = int(sample_rate * chunk_duration)
 
 # Start streaming audio input with the callback function
