@@ -65,26 +65,36 @@ def preprocess_data(class_files_data, class_files_dir, cls):
         
     return audios_feat, y
 
-def train_svm(training_data, labels):
+def train_svm(training_data, labels, clf):
     """
     Train the svm with the data provided. 
     returns the model that with the best accuracy
     """
     scaler = StandardScaler()
 
-    scaler.fit(training_data)
-    Scaled_x_train = scaler.transform(training_data)
+    if clf == []:
+        scaler.fit(training_data)
+        Scaled_x_train = scaler.transform(training_data)
 
-    ## GridSearchCV
+        ## GridSearchCV
     
-    param_grid = {'C': [0.1, 1, 10, 100, 1000],  
-                  'gamma': [1, 0.1, 0.01, 0.001, 0.0001, 'scale', 'auto'],
-                  'kernel': ['rbf', 'poly', 'sigmoid']}
+        param_grid = {'C': [0.1, 1, 10, 100, 1000],  
+                      'gamma': [1, 0.1, 0.01, 0.001, 0.0001, 'scale', 'auto'],
+                      'kernel': ['rbf', 'poly', 'sigmoid']}
 
-    grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
-    grid.fit(Scaled_x_train, labels)
+        grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
+        grid.fit(Scaled_x_train, labels)
+
+        clf_t = grid.best_estimator_
+
+    else:
+        clf_t = clf
+
+
+        #TODO: train clf_t and return best trained model
+        
     
-    return grid.best_estimator_
+    return clf_t
 
 def load_model(filename):
     if not os.path.exists(filename):
@@ -134,7 +144,7 @@ if __name__ == "__main__":
     if args.append_model is not None:
         clf = load_model(args.append_model)
 
-    train_svm(training_data, labels)
+    clf = train_svm(training_data, labels, clf)
 
 
     if args.save_file is not None:
