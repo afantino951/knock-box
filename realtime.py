@@ -39,8 +39,8 @@ def audio_callback(indata, frames, time, status):
 
     ### THIS PART SHOULD BE MODIFIED, LOAD SCALER
     scaler = StandardScaler()
-    scaler.fit(indata)
-    Scaled_test = scaler.transform(indata)
+    scaler.fit(audios_feat)
+    Scaled_test = scaler.transform(audios_feat)
     ###
 
     print(classes[clf.predict(Scaled_test)])
