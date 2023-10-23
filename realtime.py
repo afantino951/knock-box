@@ -24,6 +24,8 @@ fn_list_ii = [
     feature.zero_crossing_rate
 ]
 
+clf = load_model("model.joblib") # Model name
+
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
 
@@ -41,8 +43,6 @@ def audio_callback(indata, frames, time, status):
     Scaled_test = scaler.transform(indata)
     ###
 
-    
-    clf = load_model("model.joblib") # Model name
     print(classes[clf.predict(Scaled_test)])
     
     
