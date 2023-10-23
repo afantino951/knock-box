@@ -91,7 +91,7 @@ def train_svm(training_data, labels, clf):
         clf_t = clf
 
 
-        #TODO: train clf_t and return best trained model
+    #TODO: train clf_t and return best trained model
         
     
     return clf_t
