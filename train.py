@@ -70,12 +70,10 @@ def train_svm(training_data, labels):
     Train the svm with the data provided. 
     returns the model that with the best accuracy
     """
-    #X_train, X_test, y_train, y_test = train_test_split(training_data, labels, test_size=0.2)
-
     scaler = StandardScaler()
 
-    scaler.fit(training_data) #X_train
-    Scaled_x_train = scaler.transform(training_data) #X_train
+    scaler.fit(training_data)
+    Scaled_x_train = scaler.transform(training_data)
 
     ## GridSearchCV
     
@@ -84,7 +82,7 @@ def train_svm(training_data, labels):
                   'kernel': ['rbf', 'poly', 'sigmoid']}
 
     grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
-    grid.fit(Scaled_x_train, labels) #y_train
+    grid.fit(Scaled_x_train, labels)
     
     return grid.best_estimator_
 
