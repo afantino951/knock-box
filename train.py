@@ -89,7 +89,7 @@ def train_svm(training_data, labels, clf):
     else:
         clf_t = clf
 
-    #TODO: train clf_t and return best trained model
+    ## Train clf_t and return best trained model
 
     iteration = 1000
 
