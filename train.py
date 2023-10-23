@@ -58,7 +58,7 @@ def preprocess_data(class_files_data, class_files_dir, cls):
     y = []
     
     for files in (x for x in class_files_data if x.endswith('.wav')):
-        X , sr = librosa.load(f"{class_files_dir}/{class_files_data}", sr = 44100) #File directory
+        X , sr = librosa.load(f"{class_files_dir}/{files}", sr = 44100) #File directory
         feature_vector = get_feature_vector(X, sr)
         audios_feat.append(feature_vector)
         y.append(classes.index(cls))
