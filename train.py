@@ -5,6 +5,10 @@ import numpy as np
 import sounddevice as sd
 import librosa
 from librosa import feature
+from sklearn import svm
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import GridSearchCV
 
 from joblib import dump, load
 
@@ -61,12 +65,42 @@ def preprocess_data(class_files_data, class_files_dir, cls):
         
     return audios_feat, y
 
-def train_svm():
+def train_svm(training_data, labels):
     """
     Train the svm with the data provided. 
     returns the model that with the best accuracy
     """
-    pass
+    #X_train, X_test, y_train, y_test = train_test_split(training_data, labels, test_size=0.2)
+
+    scaler = StandardScaler()
+
+    scaler.fit(training_data) #X_train
+    Scaled_x_train = scaler.transform(training_data) #X_train
+
+    ## GridSearchCV
+    
+    param_grid = {'C': [0.1, 1, 10, 100, 1000],  
+                  'gamma': [1, 0.1, 0.01, 0.001, 0.0001, 'scale', 'auto'],
+                  'kernel': ['rbf', 'poly', 'sigmoid']}
+
+    grid = GridSearchCV(svm.SVC(), param_grid, refit = True, verbose = 3) 
+    grid.fit(Scaled_x_train, labels) #y_train
+
+    ## Training
+    
+    X_train, X_test, y_train, y_test = train_test_split(training_data, labels, test_size=0.2)
+
+    scaler.fit(X_train)
+    Scaled_x_train = scaler.transform(X_train)
+
+    clf = grid.best_estimator_
+    clf.fit(Scaled_x_train, y_train)
+
+    Scaled_x_test = scaler.transform(X_test)
+
+    prediction = clf.predict(Scaled_x_test)
+    
+    return clf
 
 def load_model(filename):
     if not os.path.exists(filename):
@@ -102,24 +136,21 @@ if __name__ == "__main__":
     print(args)
 
     #TODO @Allen: add SVM logic to functions and put best trained model in `clf`
-    quiet_data , quiet_data_dir = get_training_data("quiet", "training_data")
-    palm_data , palm_data_dir = get_training_data("palm", "training_data")
-    knuckle_data , knuckle_data_dir = get_training_data("knuckle", "training_data")
-    elbow_data , elbow_data_dir = get_training_data("elbow", "training_data")
 
-    quiet_preprocessed_data, quiet_label = preprocess_data(quiet_data, quiet_data_dir, "quiet")
-    palm_preprocessed_data, palm_label = preprocess_data(palm_data, palm_data_dir, "palm")
-    knuckle_preprocessed_data, knuckle_label = preprocess_data(knuckle_data, knuckle_data_dir, "knuckle")
-    elbow_preprocessed_data, elbow_label = preprocess_data(elbow_data, elbow_data_dir, "elbow")
-
-    preprocessed_data = quiet_preprocessed_data + palm_preprocessed_data + knuckle_preprocessed_data + elbow_preprocessed_data
-    labels = quiet_label + palm_label + knuckle_label + elbow_label
+    training_data = []
+    labels = []
+    
+    for cls in classes:
+        data , data_dir = get_training_data(cls, "training_data")
+        preprocessed_data, label = preprocess_data(data, data_dir, cls)
+        training_data = training_data + preprocessed_data
+        labels = labels + label
 
     clf = []
     if args.append_model is not None:
         clf = load_model(args.append_model)
 
-    train_svm()
+    train_svm(training_data, labels)
 
 
     if args.save_file is not None:
