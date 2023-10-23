@@ -96,7 +96,7 @@ def train_svm(training_data, labels, clf):
     clfs = []
     accs = []
 
-    for i in range(iter):
+    for i in range(iteration):
         clf_temp = clf_t
         
         count = 0
