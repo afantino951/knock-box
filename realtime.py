@@ -29,7 +29,7 @@ clf = load_model("model.joblib") # Model name
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
 
-    print("Processing audio chunk:", indata.shape)
+    print("Processing audio chunk:", indata[:,0].shape)
     
     audios_feat = []
     
@@ -43,7 +43,7 @@ def audio_callback(indata, frames, time, status):
     Scaled_test = scaler.transform(audios_feat)
     ###
 
-    print(classes[clf.predict(Scaled_test)])
+    print(clf.predict(Scaled_test))
     
     
 
