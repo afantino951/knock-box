@@ -3,11 +3,25 @@ import sys
 import argparse
 import numpy as np
 import sounddevice as sd
+import librosa
+from librosa import feature
 
 from joblib import dump, load
 
 
 classes = ["quiet", "palm", "knuckle", "elbow"]
+
+fn_list_i = [
+    feature.chroma_stft,
+    feature.spectral_centroid,
+    feature.spectral_bandwidth,
+    feature.spectral_rolloff
+]
+ 
+fn_list_ii = [
+    feature.rms,
+    feature.zero_crossing_rate
+]
 
 def get_training_data(cls, dir):
     """
@@ -25,11 +39,27 @@ def get_training_data(cls, dir):
 
     return os.listdir(cls_data_dir)
 
+def get_feature_vector(y, sr): 
+    feat_vect_i = [ np.mean(funct(y=y, sr=sr)) for funct in fn_list_i]
+    feat_vect_ii = [ np.mean(funct(y=y)) for funct in fn_list_ii] 
+    feature_vector = feat_vect_i + feat_vect_ii 
+    return feature_vector
+
 def preprocess_data(class_files_data):
     """
     Open the .wav files in list and preprocess the data 
     returns tuple([training data], [test data])
     """
+    sample_ind = 0
+    sample_files = os.listdir(class_files_data)
+    
+    while sample_ind < len(sample_files):
+        X , sr = librosa.load(f"{class_files_data}/sample_{sample_ind}.wav", sr = 44100) #File directory
+        feature_vector = get_feature_vector(X, sr)
+        audios_feat.append(feature_vector)
+        y.append(classes.index(cls))
+        sample_ind = sample_ind + 1
+    
     pass
 
 def train_svm():
