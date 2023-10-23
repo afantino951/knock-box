@@ -37,7 +37,7 @@ def get_training_data(cls, dir):
         print(f"ERR: {cls} directory does not exist in {dir}")
         return []
 
-    return os.listdir(cls_data_dir)
+    return os.listdir(cls_data_dir), cls_data_dir
 
 def get_feature_vector(y, sr): 
     feat_vect_i = [ np.mean(funct(y=y, sr=sr)) for funct in fn_list_i]
@@ -45,22 +45,21 @@ def get_feature_vector(y, sr):
     feature_vector = feat_vect_i + feat_vect_ii 
     return feature_vector
 
-def preprocess_data(class_files_data):
+def preprocess_data(class_files_data, class_files_dir, cls):
     """
     Open the .wav files in list and preprocess the data 
-    returns tuple([training data], [test data])
+    returns tuple([training data], [y])
     """
-    sample_ind = 0
-    sample_files = os.listdir(class_files_data)
+    audios_feat = []
+    y = []
     
-    while sample_ind < len(sample_files):
-        X , sr = librosa.load(f"{class_files_data}/sample_{sample_ind}.wav", sr = 44100) #File directory
+    for files in (x for x in class_files_data if x.endswith('.wav')):
+        X , sr = librosa.load(f"{class_files_dir}/{class_files_data}", sr = 44100) #File directory
         feature_vector = get_feature_vector(X, sr)
         audios_feat.append(feature_vector)
         y.append(classes.index(cls))
-        sample_ind = sample_ind + 1
-    
-    pass
+        
+    return audios_feat, y
 
 def train_svm():
     """
@@ -103,9 +102,18 @@ if __name__ == "__main__":
     print(args)
 
     #TODO @Allen: add SVM logic to functions and put best trained model in `clf`
-    quiet_data = get_training_data("quiet", "training_data")
+    quiet_data , quiet_data_dir = get_training_data("quiet", "training_data")
+    palm_data , palm_data_dir = get_training_data("palm", "training_data")
+    knuckle_data , knuckle_data_dir = get_training_data("knuckle", "training_data")
+    elbow_data , elbow_data_dir = get_training_data("elbow", "training_data")
 
-    preprocess_data(quiet_data)
+    quiet_preprocessed_data, quiet_label = preprocess_data(quiet_data, quiet_data_dir, "quiet")
+    palm_preprocessed_data, palm_label = preprocess_data(palm_data, palm_data_dir, "palm")
+    knuckle_preprocessed_data, knuckle_label = preprocess_data(knuckle_data, knuckle_data_dir, "knuckle")
+    elbow_preprocessed_data, elbow_label = preprocess_data(elbow_data, elbow_data_dir, "elbow")
+
+    preprocessed_data = quiet_preprocessed_data + palm_preprocessed_data + knuckle_preprocessed_data + elbow_preprocessed_data
+    labels = quiet_label + palm_label + knuckle_label + elbow_label
 
     clf = []
     if args.append_model is not None:
