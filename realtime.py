@@ -112,6 +112,7 @@ class DoorStateMachine:
                 self.ignore = True
                 self.sequence_index = 0
                 self.quiet_count = 0
+                display_graphic(interaction, self.sequence_index, len(self.correct_sequence), False)
                 print("Reset, Wrong Answer")
 
             if self.sequence_index == len(self.correct_sequence):
