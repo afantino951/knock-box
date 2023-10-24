@@ -8,7 +8,7 @@ from scipy.io.wavfile import write
 cwd = os.getcwd()
 classes = ["quiet", "palm", "knuckle", "elbow"]
 fs = 44100  # Sample rate
-seconds = 1  # Duration of recording
+seconds = 0.2  # Duration of recording
 
 def get_path(cls_ind):
     return os.path.join(cwd, "training_data", classes[cls_ind])
