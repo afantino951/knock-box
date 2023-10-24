@@ -121,7 +121,7 @@ def train_svm(training_data, labels, clf):
         clfs.append(clf_temp)
         accs.append(correct/count)
     
-    return clfs[accs.index(max(accs))]
+    return clfs[accs.index(max(accs))], scaler
 
 def load_model(filename):
     if not os.path.exists(filename):
@@ -147,6 +147,11 @@ if __name__ == "__main__":
                         required=False, 
                         help="Save resulting model to file"
                         )
+    parser.add_argument("-ss", "--savescaler", metavar="[FILE_PATH]",
+                        dest="save_scaler", 
+                        required=False, 
+                        help="Save scaler to file"
+                        )
     parser.add_argument("-a", "--append", metavar="[FILE_PATH]", 
                         dest="append_model", 
                         required=False,
@@ -171,9 +176,11 @@ if __name__ == "__main__":
     if args.append_model is not None:
         clf = load_model(args.append_model)
 
-    clf = train_svm(training_data, labels, clf)
+    clf, scaler = train_svm(training_data, labels, clf)
 
 
     if args.save_file is not None:
         dump(clf, args.save_file)
+    if args.save_scaler is not None:
+        dump(scaler, args.save_scaler)
     
