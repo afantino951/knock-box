@@ -25,6 +25,7 @@ fn_list_ii = [
 ]
 
 clf = load_model("model.joblib") # Model name
+scaler = load_model("scaler.joblib")
 
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
@@ -38,8 +39,8 @@ def audio_callback(indata, frames, time, status):
 
 
     ### THIS PART SHOULD BE MODIFIED, LOAD SCALER
-    scaler = StandardScaler()
-    scaler.fit(audios_feat)
+    #scaler = StandardScaler()
+    #scaler.fit(audios_feat)
     Scaled_test = scaler.transform(audios_feat)
     ###
 
