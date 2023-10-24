@@ -30,11 +30,11 @@ scaler = load_model("scaler.joblib")
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
 
-    print("Processing audio chunk:", indata[:,0].shape)
+    print("Processing audio chunk:", indata.shape)
     
     audios_feat = []
     
-    feature_vector = get_feature_vector(indata, 44100)
+    feature_vector = get_feature_vector(indata[:,0], 44100)
     audios_feat.append(feature_vector)
 
 
