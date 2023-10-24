@@ -30,11 +30,11 @@ scaler = load_model("scaler.joblib")
 def audio_callback(indata, frames, time, status):
     # Process the audio data here
 
-    print("Processing audio chunk:", indata[:,0].shape)
+    print("Processing audio chunk:", indata.shape)
     
     audios_feat = []
     
-    feature_vector = get_feature_vector(indata, 44100)
+    feature_vector = get_feature_vector(indata[:,0], 44100)
     audios_feat.append(feature_vector)
 
 
@@ -50,14 +50,14 @@ def audio_callback(indata, frames, time, status):
 
 # Set the audio parameters
 sample_rate = 44100  # Sample rate in Hz
-chunk_duration = 1  # 1-second audio chunks
+chunk_duration = 0.5  # 1-second audio chunks
 block_size = int(sample_rate * chunk_duration)
 
 # Start streaming audio input with the callback function
 with sd.InputStream(callback=audio_callback, blocksize=block_size):
     print(f"Recording audio in {chunk_duration} second chunks. Press Ctrl+C to stop.")
     try:
-        sd.sleep(-1)  # Run the audio stream indefinitely
+        sd.sleep(10000000000)  # Run the audio stream indefinitely
     except KeyboardInterrupt:
         print("\nRecording stopped.")
 
