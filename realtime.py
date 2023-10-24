@@ -4,13 +4,16 @@ from joblib import dump, load
 import librosa
 from librosa import feature
 from sklearn.preprocessing import StandardScaler
+import requests
+import time
+import matplotlib.pyplot as plt
+import matplotlib.image as mpimg
 
 from train import load_model
 from train import get_feature_vector
 from train import preprocess_data
 
-import requests
-import time
+# servo functions
 
 esp32_ip = "172.20.10.6"
 
@@ -38,6 +41,39 @@ def open_door():
     except requests.exceptions.RequestException as e:
         print(f"Request error: {e}")
 
+# GUI display function
+
+plt.ion()  # Turn on interactive mode
+fig, ax = plt.subplots(figsize=(6, 6))
+
+# Define the image to insert
+door_closed = mpimg.imread('door_closed.jpg')
+door_open = mpimg.imread('door_open.jpg')
+
+def display_graphic(interaction, sequence_index, correct_sequence_len, reset_quiet):
+    ax.clear()  # Clear the previous plot
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    
+    # Set the positions for text and image
+    text_y = 0.95
+    image_y = 0.1
+    
+    ax.text(0.5, text_y, f"Interaction Detected: {interaction}", fontsize=16, ha="center")
+    ax.text(0.5, text_y - 0.05, f"Correct Count: {sequence_index}/{correct_sequence_len}", ha="center")
+    
+    if reset_quiet:
+        ax.text(0.5, text_y - 0.1, "Reset, quiet too long", ha="center")
+    
+    if (sequence_index == correct_sequence_len):
+        ax.text(0.5, text_y - 0.11, "Success! Door opened!", ha="center")
+        ax.imshow(door_open, extent=[0.2, 0.8, image_y, image_y + 0.7])  # Insert the image
+    else:
+        ax.imshow(door_closed, extent=[0.2, 0.8, image_y, image_y + 0.7])  # Insert the image
+    
+    ax.axis("off")
+    plt.pause(0.1)  # Pause for a short duration to update the plot
+
 class DoorStateMachine:
     def __init__(self, allowable_quiet):
         self.state = "start"
@@ -53,6 +89,7 @@ class DoorStateMachine:
         if self.state == "start":
             if interaction == self.correct_sequence[self.sequence_index] and not self.ignore:
                 self.sequence_index += 1
+                display_graphic(interaction, self.sequence_index, len(self.correct_sequence), False)
                 print(interaction)
                 print("Correct Count:", self.sequence_index, '/', len(self.correct_sequence))
                 self.quiet_count = 0
@@ -62,6 +99,7 @@ class DoorStateMachine:
                 if self.quiet_count > self.quiet_limit:
                     self.sequence_index = 0
                     self.quiet_count = 0
+                    display_graphic(interaction, self.sequence_index, len(self.correct_sequence), True)
                     print("Reset, Quiet too Long")
                 self.ignore_count = 0
                 self.ignore = False
@@ -79,6 +117,7 @@ class DoorStateMachine:
             if self.sequence_index == len(self.correct_sequence):
                 self.state = "success"
         elif self.state == "success":
+            display_graphic(interaction, self.sequence_index, len(self.correct_sequence), False)
             print("Door Opened!")
             open_door()
             self.state = "start"
