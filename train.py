@@ -15,17 +15,21 @@ from joblib import dump, load
 
 classes = ["quiet", "palm", "knuckle", "elbow"]
 
-fn_list_i = [
-    feature.chroma_stft,
-    feature.spectral_centroid,
-    feature.spectral_bandwidth,
-    feature.spectral_rolloff
-]
+#fn_list_i = [
+    #feature.chroma_stft,
+    #feature.spectral_centroid,
+    #feature.spectral_bandwidth,
+    #feature.spectral_rolloff,
+    #feature.spectral_contrast,
+    #feature.mfcc,
+    #feature.melspectrogram
+#]
  
-fn_list_ii = [
-    feature.rms,
-    feature.zero_crossing_rate
-]
+#fn_list_ii = [
+    #feature.rms,
+    #feature.zero_crossing_rate,
+    #feature.spectral_flatness,
+#]
 
 def get_training_data(cls, dir):
     """
@@ -44,9 +48,10 @@ def get_training_data(cls, dir):
     return os.listdir(cls_data_dir), cls_data_dir
 
 def get_feature_vector(y, sr): 
-    feat_vect_i = [ np.mean(funct(y=y, sr=sr)) for funct in fn_list_i]
-    feat_vect_ii = [ np.mean(funct(y=y)) for funct in fn_list_ii] 
-    feature_vector = feat_vect_i + feat_vect_ii 
+    #feat_vect_i = [np.mean(funct(y=y, sr=sr), axis=1) for funct in fn_list_i]
+    #feat_vect_ii = [np.mean(funct(y=y), axis=1) for funct in fn_list_ii]
+    #feature_vector = feat_vect_i + feat_vect_ii
+    feature_vector = np.mean(feature.mfcc(y=y, sr=sr), axis=1)
     return feature_vector
 
 def preprocess_data(class_files_data, class_files_dir, cls):
@@ -62,7 +67,7 @@ def preprocess_data(class_files_data, class_files_dir, cls):
         feature_vector = get_feature_vector(X, sr)
         audios_feat.append(feature_vector)
         y.append(classes.index(cls))
-        
+
     return audios_feat, y
 
 def train_svm(training_data, labels, clf):
@@ -79,7 +84,7 @@ def train_svm(training_data, labels, clf):
         ## GridSearchCV
     
         param_grid = {'penalty': ['l1', 'l2', 'elasticnet', None],
-                      'alpha': [1, 0.1, 0.01, 0.001, 0.0001]}
+                      'alpha': [0.1, 0.01, 0.001, 0.0001]}
 
         grid = GridSearchCV(SGDClassifier(), param_grid, refit=True, verbose=3) 
         grid.fit(Scaled_x_train, labels)
@@ -167,7 +172,7 @@ if __name__ == "__main__":
     labels = []
     
     for cls in classes:
-        data , data_dir = get_training_data(cls, "training_data")
+        data, data_dir = get_training_data(cls, "training_data")
         preprocessed_data, label = preprocess_data(data, data_dir, cls)
         training_data = training_data + preprocessed_data
         labels = labels + label
