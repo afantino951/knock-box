@@ -10,7 +10,13 @@ Servo myservo;  // create servo object to control a servo
 static const int servoPin = 13;
 
 // Replace with your network credentials
-const char* ssid     = "Nhat Nguyen (2)";
+//const char* ssid     = "Nhat Nguyen (2)";
+//const char* password = "Motor1234";
+
+//const char* ssid     = "Andrew’s iPhone (3)";
+//const char* password = "thefbivan?";
+
+const char* ssid     = "Nhat Laptop";
 const char* password = "Motor1234";
 
 //const char* ssid     = "UCLA_WEB";

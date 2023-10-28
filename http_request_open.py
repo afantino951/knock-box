@@ -1,10 +1,10 @@
 import requests
 
 # Replace with your ESP32's IP address
-esp32_ip = "172.20.10.6"
+esp32_ip = "192.168.137.185"
 
 # Define the servo angle you want to set
-servo_angle = 125  # Change this to the desired angle
+servo_angle = 90  # Change this to the desired angle
 
 # Create the URL for the HTTP request
 url = f"http://{esp32_ip}/?value={servo_angle}"

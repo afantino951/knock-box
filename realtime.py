@@ -15,10 +15,10 @@ from train import preprocess_data
 
 # servo functions
 
-esp32_ip = "172.20.10.6"
+esp32_ip = "192.168.137.135"
 
 def close_door():
-    servo_angle_close = 0
+    servo_angle_close = 180
     url_close = f"http://{esp32_ip}/?value={servo_angle_close}"
     try:
         response = requests.get(url_close)
@@ -30,7 +30,7 @@ def close_door():
         print(f"Request error: {e}")
 
 def open_door():
-    servo_angle_open = 125
+    servo_angle_open = 90
     url_open = f"http://{esp32_ip}/?value={servo_angle_open}"
     try:
         response = requests.get(url_open)
